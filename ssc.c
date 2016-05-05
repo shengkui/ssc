@@ -647,6 +647,7 @@ ssc_command_t *client_send_request(ssc_client_t *c, ssc_command_t *req)
         return NULL;
     }
 
+    /* Check the integrity of the response packet */
     if (verify_command_packet(buf, bytes)) {
         ssc_command_t *resp = (ssc_command_t *)malloc(bytes);
         if (resp) {

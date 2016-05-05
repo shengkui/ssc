@@ -20,16 +20,10 @@
 #include <string.h>
 #include <stdint.h>
 
-/* Version of the programm */
-#define VERSION_MAJOR           1
-#define VERSION_MINOR           0
 
 /*--------------------------------------------------------------
  * Definition for both client and server
  *--------------------------------------------------------------*/
-/* Default IP address and port number of server */
-#define SERVER_IP               "127.0.0.1"
-#define SERVER_PORT             5555
 
 /* The read/write buffer size of socket */
 #define SSC_BUF_SIZE            4096
@@ -41,60 +35,22 @@
 #define BYTE_ALIGNED            __attribute__((packed))
 
 
-/* Request type */
-enum ssc_request_type {
-    CMD_GET_VERSION = 0x8001,   /* Get the version of server */
-    CMD_GET_MESSAGE,            /* Receive a message from server */
-    CMD_PUT_MESSAGE,            /* Send a message to server */
+/* Status code, the values used in struct ssc_command_t.status */
+#define STATUS_SUCCESS          0   /* Success */
+#define STATUS_ERROR            1   /* Generic error */
 
-    CMD_UNKNOWN                 /* */
-};
-
-/* Status code, start from 160 to skip all system pre-defined error code */
-enum ssc_status_code {
-    STATUS_SUCCESS = 0,         /* Success */
-    STATUS_ERROR = 160,         /* Generic error */
-    STATUS_INIT_ERROR,          /* Server/client init error */
-    STATUS_INVALID_COMMAND,     /* Unknown request type */
-
-    STATUS_UNKNOWN              /* */
-};
 
 /* Common header of both request/response packets */
 typedef struct ssc_command {
     uint32_t signature;         /* Signature, shall be SSC_SIGNATURE */
     union {
-        uint32_t command;       /* Request type, refer ssc_request_type */
+        uint32_t command;       /* Request type */
         uint32_t status;        /* Status code of response, refer ssc_status_code */
     };
     uint32_t data_len;          /* The data length of packet */
 
     uint16_t checksum;          /* The checksum of the packet */
 } BYTE_ALIGNED ssc_command_t;
-
-
-/* Response for CMD_GET_VERSION */
-typedef struct ssc_response_version {
-    ssc_command_t common;       /* Common header of response */
-    uint8_t major;              /* Major version */
-    uint8_t minor;              /* Minor version */
-} BYTE_ALIGNED ssc_response_version_t;
-
-
-/* Response for CMD_GET_MESSAGE */
-#define SSC_GET_MSG_SIZE        256
-typedef struct ssc_response_get_msg {
-    ssc_command_t common;           /* Common header of response */
-    char data[SSC_GET_MSG_SIZE];    /* Data from server to client */
-} BYTE_ALIGNED ssc_response_get_msg_t;
-
-
-/* Request for CMD_PUT_MESSAGE */
-#define SSC_PUT_MSG_SIZE       256
-typedef struct ssc_request_put_msg {
-    ssc_command_t common;           /* Common header of request */
-    char data[SSC_PUT_MSG_SIZE];    /* Data from client to server */
-} BYTE_ALIGNED ssc_request_put_msg_t;
 
 
 /*--------------------------------------------------------------

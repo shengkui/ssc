@@ -15,7 +15,7 @@
 ******************************************************************************/
 #include <unistd.h>
 #include <signal.h>
-#include "ssc.h"
+#include "common.h"
 
 
 volatile sig_atomic_t loop_flag = 1;
